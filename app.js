@@ -9,6 +9,14 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 	useFindAndModify: false
 });
 
+app.use((req, res, next) => {
+	req.user = {
+		_id: '63710580aac5ba86b011e046' // _id пользователя
+	};
+
+	next();
+});
+
 app.listen(PORT, () => {
 	console.log('ЕЕЕЕБОИИИ1')
 });
