@@ -14,9 +14,13 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.createUser = (req, res) => {
 	const {name, about, avatar} = req.params;
+	console.log(req.params)
 	User.create({name, about, avatar})
 		.then(user => res.send({data: user}))
-		.catch(err => res.status(500).send({message: err.message}))
+		.catch((err) => {
+			console.log({name, about, avatar})
+			res.status(500).send({message: err.message})
+		})
 }
 
 module.exports.updateUser = (req, res) => {
