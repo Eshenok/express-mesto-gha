@@ -13,6 +13,12 @@ module.exports.createCard = (req, res) => {
 		.catch(err => res.status(500).send({message: err.message}))
 }
 
+module.exports.removeCard = (req, res) => {
+	Card.findByIdAndRemove(req.params.cardId)
+		.then(card => res.send(card))
+		.catch(err => res.status(500).send({message: err.message}))
+}
+
 module.exports.likeCard = (req, res) => {
 	Card.findByIdAndUpdate(
 		req.params.cardId,
