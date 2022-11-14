@@ -23,7 +23,7 @@ module.exports.likeCard = (req, res) => {
 		.catch(err => res.status(500).send({message: err.message}))
 }
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.removeLikeCard = (req, res) => {
 	Card.findByIdAndUpdate(
 		req.params.cardId,
 		{$pull: {likes: req.user._id}}, // убрать _id из массива
