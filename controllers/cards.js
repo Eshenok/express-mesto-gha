@@ -3,7 +3,7 @@ const NotFound = require('../errors/NotFound');
 const {NOT_FOUND, NOT_VALID, SERVER_ERROR} = require('../constatnts');
 
 module.exports.getCards = (req, res) => {
-	Card.find({})
+	Card.find({}).populate('owner')
 		.then(cards => res.send({data: cards}))
 		.catch(err => res.status(SERVER_ERROR.statusCode).send({message: SERVER_ERROR.message}));
 }
@@ -22,7 +22,7 @@ module.exports.createCard = (req, res) => {
 }
 
 module.exports.removeCard = (req, res) => {
-	Card.findByIdAndRemove(req.params.cardId)
+	Card.findByIdAndRemove(req.params.cardId).populate('owner')
     .orFail(() => {
       throw new NotFound(`Карточка с id: ${req.params.cardId} - не найдена`);
     })
@@ -44,7 +44,7 @@ module.exports.likeCard = (req, res) => {
 		req.params.cardId,
 		{$addToSet: {likes: req.user._id}}, // добавить _id в массив, если его там нет
 		{new: true},
-	)
+	).populate('owner')
     .orFail(() => {
       throw new NotFound(`Карточка с id: ${req.params.cardId} - не найдена`);
     })
@@ -66,7 +66,7 @@ module.exports.removeLikeCard = (req, res) => {
 		req.params.cardId,
 		{$pull: {likes: req.user._id}}, // убрать _id из массива
 		{new: true},
-	)
+	).populate('owner')
     .orFail(() => {
       throw new NotFound(`Карточка с id: ${req.params.cardId} - не найдена`);
     })
