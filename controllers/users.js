@@ -12,7 +12,7 @@ module.exports.getUser = (req, res, next) => {
 		.catch((err) => {
       if (err.statusCode === 404) {
         res.status(NOT_FOUND.statusCode).send({message: err.message});
-      }else if (err.name = 'CastError'){
+      }else if (err.name === 'CastError') {
         res.status(NOT_VALID.statusCode).send({message: NOT_VALID.message})
       } else {
         res.status(SERVER_ERROR.statusCode).send({message: SERVER_ERROR.message})
@@ -31,7 +31,7 @@ module.exports.createUser = (req, res, next) => {
 	User.create({name, about, avatar})
 		.then(user => res.send({data: user}))
 		.catch((err) => {
-      if (err.name == 'ValidationError') {
+      if (err.name === 'ValidationError') {
         res.status(NOT_VALID.statusCode).send({message: NOT_VALID.message})
         return;
       }
