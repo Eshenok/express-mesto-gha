@@ -44,7 +44,7 @@ module.exports.likeCard = (req, res) => {
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
-  ).populate('owner').populate('likes')
+  ).populate(['owner', 'likes'])
     .orFail(() => {
       throw new NotFound(`Карточка с id: ${req.params.cardId} - не найдена`);
     })

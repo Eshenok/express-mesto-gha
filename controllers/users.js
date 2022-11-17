@@ -41,7 +41,7 @@ module.exports.createUser = (req, res) => {
 
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail(() => {
       throw new NotFound(`Пользователь с id: ${req.params.id} - не найден`);
     })
@@ -50,7 +50,7 @@ module.exports.updateUser = (req, res) => {
       if (err.statusCode === 404) {
         res.status(NOT_FOUND.statusCode).send({ message: err.message });
         return
-      } else if (err.name === 'CastError') {
+      } else if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(NOT_VALID.statusCode).send({ message: NOT_VALID.message });
         return
       }
@@ -60,16 +60,16 @@ module.exports.updateUser = (req, res) => {
 
 module.exports.updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail(() => {
-      throw new NotFound(`Пользователь с id: ${req.params.id} - не найден`);
+      throw new NotFound(`Пользователь с id: ${req.user._id} - не найден`);
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.statusCode === 404) {
         res.status(NOT_FOUND.statusCode).send({ message: err.message });
         return
-      } else if (err.name === 'CastError') {
+      } else if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(NOT_VALID.statusCode).send({ message: NOT_VALID.message });
         return
       }
