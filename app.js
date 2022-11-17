@@ -1,8 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const app = express();
 const {PORT=3000} = process.env;
+const NotFound = require('./errors/NotFound');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -18,5 +18,8 @@ app.use((req, res, next) => {
 
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
-
+app.use(function(req,res){
+  const error = new NotFound(`Такой страницы не существует`)
+  res.status(error.statusCode).send({message: error.message});
+});
 app.listen(PORT);

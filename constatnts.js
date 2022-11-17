@@ -1,6 +1,5 @@
 const NOT_FOUND = {
   statusCode: 404,
-  message: 'Пользователь с таким id не найден'
 };
 const NOT_VALID = {
   statusCode: 400,
