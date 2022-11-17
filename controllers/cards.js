@@ -44,7 +44,7 @@ module.exports.likeCard = (req, res) => {
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
-  ).populate('owner')
+  ).populate('owner').populate('likes')
     .orFail(() => {
       throw new NotFound(`Карточка с id: ${req.params.cardId} - не найдена`);
     })
@@ -66,7 +66,7 @@ module.exports.removeLikeCard = (req, res) => {
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
-  ).populate('owner')
+  ).populate('owner').populate('likes')
     .orFail(() => {
       throw new NotFound(`Карточка с id: ${req.params.cardId} - не найдена`);
     })
