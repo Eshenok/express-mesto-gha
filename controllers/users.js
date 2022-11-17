@@ -5,18 +5,18 @@ const { NOT_FOUND, NOT_VALID, SERVER_ERROR } = require('../constatnts');
 module.exports.getUser = (req, res) => {
   User.findById(req.params.id)
     .orFail(() => {
-      const error = new NotFound(`Пользователь с id: ${req.params.id} - не найден`);
-      throw error;
+      throw new NotFound(`Пользователь с id: ${req.params.id} - не найден`);
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.statusCode === 404) {
         res.status(NOT_FOUND.statusCode).send({ message: err.message });
+        return
       } else if (err.name === 'CastError') {
         res.status(NOT_VALID.statusCode).send({ message: NOT_VALID.message });
-      } else {
-        res.status(SERVER_ERROR.statusCode).send({ message: SERVER_ERROR.message });
+        return
       }
+      res.status(SERVER_ERROR.statusCode).send({ message: SERVER_ERROR.message });
     });
 };
 
@@ -41,19 +41,18 @@ module.exports.createUser = (req, res) => {
 
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
-  if (!name || !about) {
-    res.status(NOT_VALID.statusCode).send({ message: NOT_VALID.message });
-    return;
-  }
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
     .orFail(() => {
-      const error = new NotFound(`Пользователь с id: ${req.params.id} - не найден`);
-      throw error;
+      throw new NotFound(`Пользователь с id: ${req.params.id} - не найден`);
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.statusCode === 404) {
         res.status(NOT_FOUND.statusCode).send({ message: err.message });
+        return
+      } else if (err.name === 'CastError') {
+        res.status(NOT_VALID.statusCode).send({ message: NOT_VALID.message });
+        return
       }
       res.status(SERVER_ERROR.statusCode).send({ message: SERVER_ERROR.message });
     });
@@ -61,19 +60,18 @@ module.exports.updateUser = (req, res) => {
 
 module.exports.updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
-  if (!avatar) {
-    res.status(NOT_VALID.statusCode).send({ message: NOT_VALID.message });
-    return;
-  }
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
     .orFail(() => {
-      const error = new NotFound(`Пользователь с id: ${req.params.id} - не найден`);
-      throw error;
+      throw new NotFound(`Пользователь с id: ${req.params.id} - не найден`);
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.statusCode === 404) {
         res.status(NOT_FOUND.statusCode).send({ message: err.message });
+        return
+      } else if (err.name === 'CastError') {
+        res.status(NOT_VALID.statusCode).send({ message: NOT_VALID.message });
+        return
       }
       res.status(SERVER_ERROR.statusCode).send({ message: SERVER_ERROR.message });
     });
