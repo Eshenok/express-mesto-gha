@@ -66,7 +66,7 @@ module.exports.removeLikeCard = (req, res) => {
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
-  ).populate('owner').populate('likes')
+  ).populate(['owner', 'likes'])
     .orFail(() => {
       throw new NotFound(`Карточка с id: ${req.params.cardId} - не найдена`);
     })
