@@ -1,78 +1,76 @@
 const User = require('../models/user');
 const NotFound = require('../errors/NotFound');
-const { NOT_FOUND, NOT_VALID, SERVER_ERROR } = require('../constatnts');
+const BadRequest = require('../errors/BadRequest');
+const Unauthorized = require('../errors/Unauthorized');
 
-module.exports.getUser = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
+  User.find({})
+  .then((users) => res.send({ data: users }))
+  .catch(next);
+};
+
+module.exports.getUser = (req, res, next) => {
   User.findById(req.params.id)
     .orFail(() => {
       throw new NotFound(`Пользователь с id: ${req.params.id} - не найден`);
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.statusCode === 404) {
-        res.status(NOT_FOUND.statusCode).send({ message: err.message });
-        return
-      } else if (err.name === 'CastError') {
-        res.status(NOT_VALID.statusCode).send({ message: NOT_VALID.message });
-        return
+      if (err.name === 'CastError') {
+        next(new BadRequest('Переданы некорректные данные'));
+      } else {
+        next(err)
       }
-      res.status(SERVER_ERROR.statusCode).send({ message: SERVER_ERROR.message });
     });
 };
 
-module.exports.getUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.send({ data: users }))
-    .catch(() => res.status(SERVER_ERROR.statusCode).send({ message: SERVER_ERROR.message }));
-};
-
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(NOT_VALID.statusCode).send({ message: NOT_VALID.message });
-        return;
+        next(new BadRequest('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-      res.status(SERVER_ERROR.statusCode).send({ message: SERVER_ERROR.message });
     });
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
+  if (!name && !about) { // что-то обновить обязательно
+    next(new BadRequest('Запрос не может быть пустой'));
+  }
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail(() => {
       throw new NotFound(`Пользователь с id: ${req.params.id} - не найден`);
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.statusCode === 404) {
-        res.status(NOT_FOUND.statusCode).send({ message: err.message });
-        return
-      } else if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res.status(NOT_VALID.statusCode).send({ message: NOT_VALID.message });
-        return
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        next(new BadRequest('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-      res.status(SERVER_ERROR.statusCode).send({ message: SERVER_ERROR.message });
     });
 };
 
-module.exports.updateUserAvatar = (req, res) => {
+module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
+  if (!avatar) { //есть ли данные в теле
+    next(new BadRequest('Запрос не может быть пустой'));
+  }
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail(() => {
       throw new NotFound(`Пользователь с id: ${req.user._id} - не найден`);
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.statusCode === 404) {
-        res.status(NOT_FOUND.statusCode).send({ message: err.message });
-        return
-      } else if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res.status(NOT_VALID.statusCode).send({ message: NOT_VALID.message });
-        return
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        next(new BadRequest('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-      res.status(SERVER_ERROR.statusCode).send({ message: SERVER_ERROR.message });
     });
 };
