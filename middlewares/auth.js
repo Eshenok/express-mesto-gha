@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
 const Unauthorized = require('../errors/Unauthorized')
-module.exports = (req, res, next) => {
-  const {token} = req.cookie; //Достаем токен из куки
 
+module.exports = (req, res, next) => {
+  const token = req.cookies.jwt; //Достаем токен
   if(!token) {
     next(new Unauthorized('Необходимо авторизоваться'))
   }

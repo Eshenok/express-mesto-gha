@@ -9,7 +9,7 @@ const cookieParser = require('cookie-parser');
 
 router.use('/signin', login);
 router.use('/signup', createUser);
-// router.use(cookieParser())
+router.use(cookieParser())
 router.use(auth); //все что ниже защищено мидлверой
 router.use('/cards', routerCard);
 router.use('/users', routerUser);
