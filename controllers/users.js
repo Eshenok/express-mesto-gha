@@ -10,6 +10,12 @@ module.exports.getUsers = (req, res, next) => {
   .catch(next);
 };
 
+module.exports.getCurrentUser = (req, res, next) => {
+  User.findById(req.user._id)
+    .then(user => res.send({data: user}))
+    .catch(next)
+}
+
 module.exports.getUser = (req, res, next) => {
   User.findById(req.params.id)
     .orFail(() => {
@@ -78,7 +84,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
 module.exports.login = (req, res, next) => {
   const {email, password} = req.body;
 
-  User.findUserByCredentials(email, password)
+  User.findUserByCredentials(email, password) //кастомный метод
     .then((user) => {
       const token = jwt.sign({_id: user._id}, 'seckey', {expiresIn: '7d'})
       res.cookie('jwt', token, {
