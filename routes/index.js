@@ -4,10 +4,20 @@ const routerCard = require('./cards');
 const auth = require('../middlewares/auth')
 const NotFound = require('../errors/NotFound');
 const {login, createUser} = require('../controllers/users');
-const {errors} = require('celebrate');
+const {celebrate, Joi, errors} = require('celebrate');
 
-router.use('/signin', login);
-router.use('/signup', createUser);
+router.use('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+  })
+}), login);
+router.use('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+  })
+}), createUser);
 router.use(auth); //все что ниже защищено мидлверой
 router.use('/cards', routerCard);
 router.use('/users', routerUser);

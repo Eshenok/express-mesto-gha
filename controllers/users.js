@@ -1,3 +1,4 @@
+require('dotenv').config();
 const User = require('../models/user');
 const NotFound = require('../errors/NotFound');
 const BadRequest = require('../errors/BadRequest');
@@ -5,6 +6,7 @@ const Conflict = require('../errors/Conflict')
 const bcrypt = require('bcryptjs')
 const jwt = require("jsonwebtoken");
 const escape = require('escape-html');
+const {JWT_SECRET} = process.env
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -19,9 +21,10 @@ module.exports.getCurrentUser = (req, res, next) => {
 }
 
 module.exports.getUser = (req, res, next) => {
-  User.findById(req.params.id)
+  const id = escape(req.params.id);
+  User.findById(id)
     .orFail(() => {
-      throw new NotFound(`Пользователь с id: ${req.params.id} - не найден`);
+      throw new NotFound(`Пользователь с id: ${id} - не найден`);
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
@@ -54,7 +57,8 @@ module.exports.createUser = (req, res, next) => {
 };
 
 module.exports.updateUser = (req, res, next) => {
-  const { name, about } = req.body;
+  const name = escape(req.body.name);
+  const about = escape(req.body.name);
   if (!name && !about) { // что-то обновить обязательно
     next(new BadRequest('Запрос не может быть пустой'));
   }
@@ -73,7 +77,7 @@ module.exports.updateUser = (req, res, next) => {
 };
 
 module.exports.updateUserAvatar = (req, res, next) => {
-  const { avatar } = req.body;
+  const avatar = escape(req.body.avatar);
   if (!avatar) { //есть ли данные в теле
     next(new BadRequest('Запрос не может быть пустой'));
   }
@@ -93,10 +97,9 @@ module.exports.updateUserAvatar = (req, res, next) => {
 
 module.exports.login = (req, res, next) => {
   const {email, password} = req.body;
-
   User.findUserByCredentials(email, password) //кастомный метод
     .then((user) => {
-      const token = jwt.sign({_id: user._id}, 'seckey', {expiresIn: '7d'})
+      const token = jwt.sign({_id: user._id}, JWT_SECRET, {expiresIn: '7d'})
       res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7, // 7 дней срок
         httpOnly: true,  // из js закрыли доступ
