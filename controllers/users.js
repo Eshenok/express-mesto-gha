@@ -44,7 +44,9 @@ module.exports.createUser = (req, res, next) => {
     .then(hash => User.create({ //если все "ок", то создаем юзера
       email: req.body.email,
       password: hash,
-      name, about, avatar, //либо данные из body либо возьмет default из схемы
+      name: name==='undefined'?undefined:name,
+      about: about==='undefined'?undefined:about,
+      avatar: avatar==='undefined'?undefined:avatar, //либо данные из body либо возьмет default из схемы
     }))
     .then((user) => res.send({ data: user })) //вернем данные назад
     .catch((err) => {
@@ -58,13 +60,14 @@ module.exports.createUser = (req, res, next) => {
 
 module.exports.updateUser = (req, res, next) => {
   const name = escape(req.body.name);
-  const about = escape(req.body.name);
-  if (!name && !about) { // что-то обновить обязательно
+  const about = escape(req.body.about);
+  const id = escape(req.params.id);
+  if (!req.body.name && !req.body.about) { // что-то обновить обязательно
     next(new BadRequest('Запрос не может быть пустой'));
   }
-  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
     .orFail(() => {
-      throw new NotFound(`Пользователь с id: ${req.params.id} - не найден`);
+      throw new NotFound(`Пользователь с id: ${id} - не найден`);
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
@@ -78,10 +81,10 @@ module.exports.updateUser = (req, res, next) => {
 
 module.exports.updateUserAvatar = (req, res, next) => {
   const avatar = escape(req.body.avatar);
-  if (!avatar) { //есть ли данные в теле
+  if (!req.body.avatar) { //есть ли данные в теле
     next(new BadRequest('Запрос не может быть пустой'));
   }
-  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
     .orFail(() => {
       throw new NotFound(`Пользователь с id: ${req.user._id} - не найден`);
     })
