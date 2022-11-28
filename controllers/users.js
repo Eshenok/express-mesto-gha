@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const NotFound = require('../errors/NotFound');
 const BadRequest = require('../errors/BadRequest');
+const Conflict = require('../errors/Conflict')
 const bcrypt = require('bcryptjs')
 const jwt = require("jsonwebtoken");
 
@@ -40,7 +41,13 @@ module.exports.createUser = (req, res, next) => {
       name, about, avatar, //либо данные из body либо возьмет default из схемы
     }))
     .then((user) => res.send({ data: user })) //вернем данные назад
-    .catch(next)
+    .catch((err) => {
+      if (err.code === 11000) {
+        next(new Conflict('Пользователь с такой почтой уже существует'))
+      } else {
+        next(err);
+      }
+    })
 };
 
 module.exports.updateUser = (req, res, next) => {
