@@ -2,6 +2,7 @@ const Card = require('../models/card');
 const NotFound = require('../errors/NotFound');
 const BadRequest = require('../errors/BadRequest');
 const Unauthorized = require('../errors/Unauthorized');
+const escape = require('escape-html');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({}).populate('owner')
@@ -10,7 +11,8 @@ module.exports.getCards = (req, res, next) => {
 };
 
 module.exports.createCard = (req, res, next) => {
-  const { name, link } = req.body;
+  const name = escape(req.body.name);
+  const link = escape(req.body.link);
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {

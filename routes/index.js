@@ -4,20 +4,21 @@ const routerCard = require('./cards');
 const auth = require('../middlewares/auth')
 const NotFound = require('../errors/NotFound');
 const {login, createUser} = require('../controllers/users');
-const cookieParser = require('cookie-parser');
 const {errors} = require('celebrate');
-const BadRequest = require('../errors/BadRequest');
-
 
 router.use('/signin', login);
 router.use('/signup', createUser);
-router.use(cookieParser())
 router.use(auth); //все что ниже защищено мидлверой
 router.use('/cards', routerCard);
 router.use('/users', routerUser);
 
-router.use(errors());
-router.use((req, res) => { //обработчик 404 not found
+// Ошибки celebrate
+router.use(errors({
+  message: 'Введены некорректные данные',
+}));
+
+//обработчик 404 not found
+router.use((req, res) => {
   const error = new NotFound('Такой страницы не существует');
   res.status(error.statusCode).send({ message: error.message });
 });

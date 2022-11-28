@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cookieParser = require("cookie-parser");
 const app = express();
 const { PORT = 3000 } = process.env;
 
@@ -8,6 +9,7 @@ app.use(express.urlencoded({ extended: true }));
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
+app.use(cookieParser())
 app.use('/', require('./routes/index'));
 
 //Централизованный обработчик ошибок

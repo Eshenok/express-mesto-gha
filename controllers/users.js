@@ -4,6 +4,7 @@ const BadRequest = require('../errors/BadRequest');
 const Conflict = require('../errors/Conflict')
 const bcrypt = require('bcryptjs')
 const jwt = require("jsonwebtoken");
+const escape = require('escape-html');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -33,7 +34,9 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  const { name, about, avatar} = req.body;
+  const name = escape(req.body.name);
+  const about = escape(req.body.about);
+  const avatar = escape(req.body.avatar);
   bcrypt.hash(req.body.password, 10) //hash пароля
     .then(hash => User.create({ //если все "ок", то создаем юзера
       email: req.body.email,
