@@ -1,27 +1,32 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 
 const app = express();
-const { PORT = 3000 } = process.env;
-const NotFound = require('./errors/NotFound');
+const { PORT = 3000, CONNECT_DB } = process.env;
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-mongoose.connect('mongodb://localhost:27017/mestodb');
+mongoose.connect(CONNECT_DB);
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '63710580aac5ba86b011e046', // _id пользователя
-  };
-  next();
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // за 15 минут
+  max: 100, // можно совершить максимум 100 запросов с одного IP
 });
 
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
+app.use(limiter);
+app.use(helmet());
+app.use(cookieParser());
+app.use('/', require('./routes/index'));
 
-app.use((req, res) => {
-  const error = new NotFound('Такой страницы не существует');
-  res.status(error.statusCode).send({ message: error.message });
+// Централизованный обработчик ошибок
+app.use((err, req, res) => {
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({ message: statusCode === 500 ? 'Eternal error' : message });
 });
+
 app.listen(PORT);
