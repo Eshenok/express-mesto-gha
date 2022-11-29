@@ -1,23 +1,23 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const Unauthorized = require('../errors/Unauthorized')
+const Unauthorized = require('../errors/Unauthorized');
 
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
     minLength: 2,
     maxLength: 30,
-    default: 'Жак-Ив Кусто'
+    default: 'Жак-Ив Кусто',
   },
   about: {
     type: String,
     minLength: 2,
     maxLength: 30,
-    default: 'Исследователь'
+    default: 'Исследователь',
   },
   avatar: {
     type: String,
-    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png'
+    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
   },
   email: {
     required: true,
@@ -27,8 +27,8 @@ const userSchema = new mongoose.Schema({
   password: {
     required: true,
     type: String,
-    select: false //запретили возвращать пароль
-  }
+    select: false, // запретили возвращать пароль
+  },
 });
 
 userSchema.statics.findUserByCredentials = function (email, password) {
@@ -46,7 +46,7 @@ userSchema.statics.findUserByCredentials = function (email, password) {
 
           return user; // теперь user доступен
         });
-    })
+    });
 };
 
 module.exports = mongoose.model('user', userSchema);

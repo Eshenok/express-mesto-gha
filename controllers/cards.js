@@ -1,8 +1,8 @@
+const escape = require('escape-html');
 const Card = require('../models/card');
 const NotFound = require('../errors/NotFound');
 const BadRequest = require('../errors/BadRequest');
 const Unauthorized = require('../errors/Unauthorized');
-const escape = require('escape-html');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({}).populate('owner')
@@ -27,19 +27,19 @@ module.exports.createCard = (req, res, next) => {
 module.exports.removeCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId).populate('owner')
     .orFail(() => {
-      throw new NotFound(`Карточка не найдена`);
+      throw new NotFound('Карточка не найдена');
     })
     .then((card) => {
       if (card.owner._id !== req.user._id) {
         next(new Unauthorized('Невозможно удалить чужую карточку'));
       }
-      res.send(card)
+      res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные'));
       } else {
-        next(err)
+        next(err);
       }
     });
 };
@@ -51,7 +51,7 @@ module.exports.likeCard = (req, res, next) => {
     { new: true },
   ).populate(['owner', 'likes'])
     .orFail(() => {
-      throw new NotFound(`Карточка не найдена`);
+      throw new NotFound('Карточка не найдена');
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
@@ -70,7 +70,7 @@ module.exports.removeLikeCard = (req, res, next) => {
     { new: true },
   ).populate(['owner', 'likes'])
     .orFail(() => {
-      throw new NotFound(`Карточка не найдена`);
+      throw new NotFound('Карточка не найдена');
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
