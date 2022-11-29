@@ -5,6 +5,16 @@ const auth = require('../middlewares/auth')
 const NotFound = require('../errors/NotFound');
 const {login, createUser} = require('../controllers/users');
 const {celebrate, Joi, errors} = require('celebrate');
+const rateLimit = require('express-rate-limit');
+
+const createAccountLimiter = rateLimit({ //лимит на создание пользователей
+  windowMs: 30 * 30 * 1000, // 30 минут
+  max: 10, // максимум 10
+  message:
+    'Too many request',
+  standardHeaders: true,
+  legacyHeaders: false,
+})
 
 router.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -12,7 +22,8 @@ router.post('/signin', celebrate({
     password: Joi.string().required(),
   })
 }), login);
-router.post('/signup', celebrate({
+
+router.post('/signup', createAccountLimiter, celebrate({ // подключили как мидл createAccountLimiter
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required(),

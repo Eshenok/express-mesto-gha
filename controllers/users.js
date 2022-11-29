@@ -16,6 +16,9 @@ module.exports.getUsers = (req, res, next) => {
 
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
+    .orFail(() => {
+      next(new NotFound('Пользователь не найден'))
+    })
     .then(user => res.send({data: user}))
     .catch(next)
 }
@@ -24,7 +27,7 @@ module.exports.getUser = (req, res, next) => {
   const id = escape(req.params.id);
   User.findById(id)
     .orFail(() => {
-      throw new NotFound(`Пользователь с id: ${id} - не найден`);
+      throw new NotFound(`Пользователь не найден`);
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
@@ -37,16 +40,16 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  const name = escape(req.body.name);
-  const about = escape(req.body.about);
-  const avatar = escape(req.body.avatar);
+  const name = req.body.name ? escape(req.body.name):undefined;
+  const about = req.body.about ? escape(req.body.about):undefined;
+  const avatar = req.body.avatar ? escape(req.body.avatar):undefined;
   bcrypt.hash(req.body.password, 10) //hash пароля
     .then(hash => User.create({ //если все "ок", то создаем юзера
       email: req.body.email,
       password: hash,
-      name: name==='undefined'?undefined:name,
-      about: about==='undefined'?undefined:about,
-      avatar: avatar==='undefined'?undefined:avatar, //либо данные из body либо возьмет default из схемы
+      name,
+      about,
+      avatar, //либо данные из body либо возьмет default из схемы
     }))
     .then((user) => res.send({ data: user })) //вернем данные назад
     .catch((err) => {
@@ -59,15 +62,14 @@ module.exports.createUser = (req, res, next) => {
 };
 
 module.exports.updateUser = (req, res, next) => {
-  const name = escape(req.body.name);
-  const about = escape(req.body.about);
-  const id = escape(req.params.id);
-  if (!req.body.name && !req.body.about) { // что-то обновить обязательно
+  const name = req.body.name ? escape(req.body.name):undefined;
+  const about = req.body.about ? escape(req.body.about):undefined;
+  if (!name && !about) { // что-то обновить обязательно
     next(new BadRequest('Запрос не может быть пустой'));
   }
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
     .orFail(() => {
-      throw new NotFound(`Пользователь с id: ${id} - не найден`);
+      throw new NotFound(`Пользователь не найден`);
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
@@ -80,13 +82,12 @@ module.exports.updateUser = (req, res, next) => {
 };
 
 module.exports.updateUserAvatar = (req, res, next) => {
-  const avatar = escape(req.body.avatar);
-  if (!req.body.avatar) { //есть ли данные в теле
-    next(new BadRequest('Запрос не может быть пустой'));
-  }
+  const avatar = req.body.avatar ? escape(req.body.avatar):undefined;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
+    // Сработает только если удалить пользователя из БД, тогда токен пропустит, но тут не сможет найти в db такого юзера
+    // В auth нельзя иначе будет слишком много запросов к БД
     .orFail(() => {
-      throw new NotFound(`Пользователь с id: ${req.user._id} - не найден`);
+      throw new NotFound(`Пользователь не найден`);
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {

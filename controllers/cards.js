@@ -27,9 +27,14 @@ module.exports.createCard = (req, res, next) => {
 module.exports.removeCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId).populate('owner')
     .orFail(() => {
-      throw new NotFound(`Карточка с id: ${req.params.cardId} - не найдена`);
+      throw new NotFound(`Карточка не найдена`);
     })
-    .then((card) => res.send(card))
+    .then((card) => {
+      if (card.owner._id !== req.user._id) {
+        next(new Unauthorized('Невозможно удалить чужую карточку'));
+      }
+      res.send(card)
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные'));
@@ -46,7 +51,7 @@ module.exports.likeCard = (req, res, next) => {
     { new: true },
   ).populate(['owner', 'likes'])
     .orFail(() => {
-      throw new NotFound(`Карточка с id: ${req.params.cardId} - не найдена`);
+      throw new NotFound(`Карточка не найдена`);
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
@@ -65,7 +70,7 @@ module.exports.removeLikeCard = (req, res, next) => {
     { new: true },
   ).populate(['owner', 'likes'])
     .orFail(() => {
-      throw new NotFound(`Карточка с id: ${req.params.cardId} - не найдена`);
+      throw new NotFound(`Карточка не найдена`);
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {

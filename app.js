@@ -4,12 +4,20 @@ const mongoose = require('mongoose');
 const cookieParser = require("cookie-parser");
 const app = express();
 const { PORT = 3000, CONNECT_DB } = process.env;
+const rateLimit = require('express-rate-limit');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 mongoose.connect(CONNECT_DB);
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // за 15 минут
+  max: 100 // можно совершить максимум 100 запросов с одного IP
+});
+
+// подключаем rate-limiter
+app.use(limiter);
 app.use(cookieParser())
 app.use('/', require('./routes/index'));
 
