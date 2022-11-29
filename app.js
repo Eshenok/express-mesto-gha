@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const app = express();
 const { PORT = 3000, CONNECT_DB } = process.env;
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -16,8 +17,8 @@ const limiter = rateLimit({
   max: 100 // можно совершить максимум 100 запросов с одного IP
 });
 
-// подключаем rate-limiter
 app.use(limiter);
+app.use(helmet());
 app.use(cookieParser())
 app.use('/', require('./routes/index'));
 
