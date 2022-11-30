@@ -3,16 +3,29 @@ const { celebrate, Joi } = require('celebrate');
 const {
   getCards, removeLikeCard, likeCard, createCard, removeCard,
 } = require('../controllers/cards');
+const {patternUrl} = require('../constants');
 
 routerCard.get('/', getCards);
 routerCard.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().pattern(/(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+\.(ru|com)))*/),
+    link: Joi.string().required().pattern(patternUrl),
   }),
 }), createCard);
-routerCard.delete('/:cardId', removeCard);
-routerCard.put('/:cardId/likes', likeCard);
-routerCard.delete('/:cardId/likes', removeLikeCard);
+routerCard.delete('/:cardId', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().required().length(24).hex()
+  })
+}), removeCard);
+routerCard.put('/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().required().length(24).hex()
+  })
+}), likeCard);
+routerCard.delete('/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().required().length(24).hex()
+  })
+}), removeLikeCard);
 
 module.exports = routerCard;

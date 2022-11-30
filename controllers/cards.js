@@ -3,9 +3,10 @@ const Card = require('../models/card');
 const NotFound = require('../errors/NotFound');
 const BadRequest = require('../errors/BadRequest');
 const Unauthorized = require('../errors/Unauthorized');
+const Forbidden = require('../errors/Forbidden');
 
 module.exports.getCards = (req, res, next) => {
-  Card.find({}).populate('owner')
+  Card.find({})
     .then((cards) => res.send({ data: cards }))
     .catch(next);
 };
@@ -13,6 +14,7 @@ module.exports.getCards = (req, res, next) => {
 module.exports.createCard = (req, res, next) => {
   const name = escape(req.body.name);
   const link = escape(req.body.link);
+
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
@@ -25,15 +27,21 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.removeCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId).populate('owner')
-    .orFail(() => {
-      throw new NotFound('Карточка не найдена');
-    })
+  const id = escape(req.params.cardId);
+
+  // Card.findById(id)
+  //   .orFail(() => {
+  //   throw new NotFound('Карточка не найдена');
+  // })
+  //   .then((card) => {
+  //     if (card._id === req.user._id) {
+  //
+  //     }
+  //   })
+
+  Card.findByIdAndRemove(id)
     .then((card) => {
-      if (card.owner._id !== req.user._id) {
-        next(new Unauthorized('Невозможно удалить чужую карточку'));
-      }
-      res.send(card);
+      res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -49,7 +57,7 @@ module.exports.likeCard = (req, res, next) => {
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
-  ).populate(['owner', 'likes'])
+  )
     .orFail(() => {
       throw new NotFound('Карточка не найдена');
     })
@@ -68,7 +76,7 @@ module.exports.removeLikeCard = (req, res, next) => {
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
-  ).populate(['owner', 'likes'])
+  )
     .orFail(() => {
       throw new NotFound('Карточка не найдена');
     })
