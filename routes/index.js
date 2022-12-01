@@ -1,20 +1,12 @@
 const router = require('express').Router();
 const { celebrate, Joi, errors } = require('celebrate');
-const rateLimit = require('express-rate-limit');
+const { createAccountLimiter } = require('../middlewares/limiter');
 const routerUser = require('./users');
 const routerCard = require('./cards');
 const auth = require('../middlewares/auth');
 const NotFound = require('../errors/NotFound');
 const { login, createUser } = require('../controllers/users');
-
-const createAccountLimiter = rateLimit({ // лимит на создание пользователей
-  windowMs: 30 * 30 * 1000, // 30 минут
-  max: 10, // максимум 10
-  message:
-    'Too many request',
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+const {patternUrl} = require('../constants');
 
 router.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -29,7 +21,7 @@ router.post('/signup', createAccountLimiter, celebrate({ // подключили
     password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+\.(ru|com)))*/),
+    avatar: Joi.string().pattern(patternUrl),
   }),
 }), createUser);
 router.use(auth); // все что ниже защищено мидлверой
@@ -42,9 +34,8 @@ router.use(errors({
 }));
 
 // обработчик 404 not found
-router.use((req, res) => {
-  const error = new NotFound('Такой страницы не существует');
-  res.status(error.statusCode).send({ message: error.message });
+router.use((req, res, next) => {
+  next(new NotFound('Такой страницы не существует'));
 });
 
 module.exports = router;

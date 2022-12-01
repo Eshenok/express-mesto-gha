@@ -2,31 +2,22 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-
 const app = express();
-const { PORT = 3000, CONNECT_DB } = process.env;
-const rateLimit = require('express-rate-limit');
+const { PORT = 3000, CONNECT_DB, NODE_ENV } = process.env;
 const helmet = require('helmet');
+const {limiter} = require('./middlewares/limiter');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-mongoose.connect(CONNECT_DB);
+mongoose.connect(NODE_ENV === 'production' ? CONNECT_DB : 'mongodb://localhost:27017/mestodb');
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // за 15 минут
-  max: 100, // можно совершить максимум 100 запросов с одного IP
-});
-
+//security
 app.use(limiter);
 app.use(helmet());
+
 app.use(cookieParser());
 app.use('/', require('./routes/index'));
-
-// Централизованный обработчик ошибок
-app.use((err, req, res) => {
-  const { statusCode = 500, message } = err;
-  res.status(statusCode).send({ message: statusCode === 500 ? 'Eternal error' : message });
-});
+app.use(require('./errors/centralErrorHandling'));
 
 app.listen(PORT);
