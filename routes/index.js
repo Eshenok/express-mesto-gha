@@ -6,7 +6,7 @@ const routerCard = require('./cards');
 const auth = require('../middlewares/auth');
 const NotFound = require('../errors/NotFound');
 const { login, createUser } = require('../controllers/users');
-const {patternUrl} = require('../constants');
+const { patternUrl } = require('../constants');
 
 router.post('/signin', celebrate({
   body: Joi.object().keys({

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { patternUrl } = require('../constants')
+const { patternUrl } = require('../constants');
 
 const cardSchema = new mongoose.Schema({
   name: {

@@ -6,7 +6,8 @@ const User = require('../models/user');
 const NotFound = require('../errors/NotFound');
 const BadRequest = require('../errors/BadRequest');
 const Conflict = require('../errors/Conflict');
-const {productionSecurityKey} = require('../constants');
+const { productionSecurityKey } = require('../constants');
+
 const { JWT_SECRET, NODE_ENV } = process.env;
 
 module.exports.getUsers = (req, res, next) => {
@@ -56,13 +57,13 @@ module.exports.createUser = (req, res, next) => {
     }))
     .then((user) => {
       user.password = escape(req.body.password);
-      res.send(user)
+      res.send(user);
     }) // вернем данные назад
     .catch((err) => {
       if (err.code === 11000) {
         next(new Conflict('Пользователь с такой почтой уже существует'));
       } else if (err.name === 'CastError' || err.name === 'ValidationError') {
-        next(new BadRequest('Переданны некорректные данные'))
+        next(new BadRequest('Переданны некорректные данные'));
       } else {
         next(err);
       }
