@@ -7,7 +7,7 @@ const Forbidden = require('../errors/Forbidden');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.send({ data: cards }))
+    .then((cards) => res.send(cards))
     .catch(next);
 };
 
@@ -16,7 +16,7 @@ module.exports.createCard = (req, res, next) => {
   const link = escape(req.body.link);
 
   Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
@@ -38,7 +38,7 @@ module.exports.removeCard = (req, res, next) => {
         if (card.owner == req.user._id) {
           Card.findByIdAndRemove(id)
             .then((card) => {
-              res.send({ data: card });
+              res.send(card);
             }).catch(next)
             ;
         } else {
@@ -65,7 +65,7 @@ module.exports.likeCard = (req, res, next) => {
     .orFail(() => {
       throw new NotFound('Карточка не найдена');
     })
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные'));
@@ -84,7 +84,7 @@ module.exports.removeLikeCard = (req, res, next) => {
     .orFail(() => {
       throw new NotFound('Карточка не найдена');
     })
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные'));

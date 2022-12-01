@@ -11,7 +11,7 @@ const { JWT_SECRET, NODE_ENV } = process.env;
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.send({ data: users }))
+    .then((users) => res.send(users))
     .catch(next);
 };
 
@@ -20,7 +20,7 @@ module.exports.getCurrentUser = (req, res, next) => {
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch(next);
 };
 
@@ -31,7 +31,7 @@ module.exports.getUser = (req, res, next) => {
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные'));
@@ -56,7 +56,7 @@ module.exports.createUser = (req, res, next) => {
     }))
     .then((user) => {
       user.password = req.body.password;
-      res.send({ data: user })
+      res.send(user)
     }) // вернем данные назад
     .catch((err) => {
       if (err.code === 11000) {
@@ -77,7 +77,7 @@ module.exports.updateUser = (req, res, next) => {
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
@@ -97,7 +97,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
