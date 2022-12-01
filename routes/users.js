@@ -3,14 +3,14 @@ const { celebrate, Joi } = require('celebrate');
 const {
   getUser, getUsers, updateUser, updateUserAvatar, getCurrentUser,
 } = require('../controllers/users');
-const {patternUrl} = require('../constants');
+const { patternUrl } = require('../constants');
 
 routerUser.get('/', getUsers);
 routerUser.get('/me', getCurrentUser);
 routerUser.get('/:id', celebrate({
   params: Joi.object().keys({
-    id: Joi.string().required().length(24).hex()
-  })
+    id: Joi.string().required().length(24).hex(),
+  }),
 }), getUser);
 routerUser.patch('/me', celebrate({
   body: Joi.object().keys({

@@ -14,4 +14,4 @@ const createAccountLimiter = rateLimit({ // лимит на создание п�
   legacyHeaders: false,
 });
 
-module.exports = {limiter, createAccountLimiter}
+module.exports = { limiter, createAccountLimiter };

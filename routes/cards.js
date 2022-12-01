@@ -3,7 +3,7 @@ const { celebrate, Joi } = require('celebrate');
 const {
   getCards, removeLikeCard, likeCard, createCard, removeCard,
 } = require('../controllers/cards');
-const {patternUrl} = require('../constants');
+const { patternUrl } = require('../constants');
 
 routerCard.get('/', getCards);
 routerCard.post('/', celebrate({
@@ -14,18 +14,18 @@ routerCard.post('/', celebrate({
 }), createCard);
 routerCard.delete('/:cardId', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().required().length(24).hex()
-  })
+    cardId: Joi.string().required().length(24).hex(),
+  }),
 }), removeCard);
 routerCard.put('/:cardId/likes', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().required().length(24).hex()
-  })
+    cardId: Joi.string().required().length(24).hex(),
+  }),
 }), likeCard);
 routerCard.delete('/:cardId/likes', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().required().length(24).hex()
-  })
+    cardId: Joi.string().required().length(24).hex(),
+  }),
 }), removeLikeCard);
 
 module.exports = routerCard;
