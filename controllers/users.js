@@ -109,7 +109,8 @@ module.exports.updateUserAvatar = (req, res, next) => {
 };
 
 module.exports.login = (req, res, next) => {
-  const { email, password } = req.body;
+  const { password } = req.body;
+  const email = req.body.email ? escape(req.body.email) : undefined;
 
   User.findUserByCredentials(email, password) // кастомный метод
     .then((user) => {

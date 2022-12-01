@@ -40,12 +40,11 @@ module.exports.removeCard = (req, res, next) => {
             .then((card) => {
               res.send(card);
             }).catch(next)
-            ;
         } else {
           throw new Forbidden('Невозможно удалить чужую карточку')
         }
       } catch {
-        throw new Error('Internal error')
+        throw new Forbidden('Невозможно удалить чужую карточку')
       }
     }).catch((err) => {
     if (err.name === 'CastError') {
