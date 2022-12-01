@@ -55,7 +55,7 @@ module.exports.createUser = (req, res, next) => {
       avatar, // либо данные из body либо возьмет default из схемы
     }))
     .then((user) => {
-      user.password = req.body.password;
+      user.password = escape(req.body.password);
       res.send(user)
     }) // вернем данные назад
     .catch((err) => {
