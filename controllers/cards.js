@@ -1,8 +1,6 @@
-const escape = require('escape-html');
 const Card = require('../models/card');
 const NotFound = require('../errors/NotFound');
 const BadRequest = require('../errors/BadRequest');
-const Unauthorized = require('../errors/Unauthorized');
 const Forbidden = require('../errors/Forbidden');
 
 module.exports.getCards = (req, res, next) => {
