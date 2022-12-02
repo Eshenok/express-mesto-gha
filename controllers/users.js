@@ -26,9 +26,7 @@ module.exports.getCurrentUser = (req, res, next) => {
 };
 
 module.exports.getUser = (req, res, next) => {
-  const id = escape(req.params.id);
-
-  User.findById(id)
+  User.findById(req.params.id)
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
@@ -43,9 +41,7 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  const name = req.body.name ? escape(req.body.name) : undefined;
-  const about = req.body.about ? escape(req.body.about) : undefined;
-  const avatar = req.body.avatar ? escape(req.body.avatar) : undefined;
+  const { name, about, avatar } = req.body;
 
   bcrypt.hash(req.body.password, 10) // hash пароля
     .then((hash) => User.create({ // если все "ок", то создаем юзера
@@ -71,8 +67,7 @@ module.exports.createUser = (req, res, next) => {
 };
 
 module.exports.updateUser = (req, res, next) => {
-  const name = req.body.name ? escape(req.body.name) : undefined;
-  const about = req.body.about ? escape(req.body.about) : undefined;
+  const { name, about } = req.body
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail(() => {
@@ -89,7 +84,7 @@ module.exports.updateUser = (req, res, next) => {
 };
 
 module.exports.updateUserAvatar = (req, res, next) => {
-  const avatar = req.body.avatar ? escape(req.body.avatar) : undefined;
+  const { avatar } = req.body
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     // Сработает только если удалить пользователя из БД,
@@ -109,8 +104,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
 };
 
 module.exports.login = (req, res, next) => {
-  const { password } = req.body;
-  const email = req.body.email ? escape(req.body.email) : undefined;
+  const { password, email } = req.body;
 
   User.findUserByCredentials(email, password) // кастомный метод
     .then((user) => {

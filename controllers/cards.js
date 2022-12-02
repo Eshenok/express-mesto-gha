@@ -12,8 +12,7 @@ module.exports.getCards = (req, res, next) => {
 };
 
 module.exports.createCard = (req, res, next) => {
-  const name = escape(req.body.name);
-  const link = escape(req.body.link);
+  const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send(card))
@@ -27,16 +26,15 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.removeCard = (req, res, next) => {
-  const id = escape(req.params.cardId);
 
-  Card.findById(id)
+  Card.findById(req.params.cardId)
     .orFail(() => {
     throw new NotFound('Карточка не найдена');
   })
     .then((card) => {
       try {
         if (card.owner == req.user._id) {
-          Card.findByIdAndRemove(id)
+          Card.findByIdAndRemove(req.params.cardId)
             .then((card) => {
               res.send(card);
             }).catch(next)
