@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const app = express();
 const { PORT = 3000, CONNECT_DB, NODE_ENV } = process.env;
 const helmet = require('helmet');
+const { replaceMnemonics } = require('./middlewares/replaceMnemonics');
 const { limiter } = require('./middlewares/limiter');
 
 app.use(express.json());
@@ -18,6 +19,7 @@ app.use(limiter);
 app.use(helmet());
 
 app.use(cookieParser());
+app.use(replaceMnemonics);
 app.use('/', require('./routes/index'));
 app.use(require('./errors/centralErrorHandling'));
 

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { patternUrl } = require('../constants');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -10,6 +11,7 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     required: true,
+    match: patternUrl,
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,

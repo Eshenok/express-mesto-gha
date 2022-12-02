@@ -12,7 +12,7 @@ const { JWT_SECRET, NODE_ENV } = process.env;
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.send({ data: users }))
+    .then((users) => res.send(users))
     .catch(next);
 };
 
@@ -21,18 +21,16 @@ module.exports.getCurrentUser = (req, res, next) => {
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch(next);
 };
 
 module.exports.getUser = (req, res, next) => {
-  const id = escape(req.params.id);
-
-  User.findById(id)
+  User.findById(req.params.id)
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные'));
@@ -43,19 +41,20 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  const name = req.body.name ? escape(req.body.name) : undefined;
-  const about = req.body.about ? escape(req.body.about) : undefined;
-  const avatar = req.body.avatar ? escape(req.body.avatar) : undefined;
+  const { name, about, avatar } = req.body;
 
   bcrypt.hash(req.body.password, 10) // hash пароля
     .then((hash) => User.create({ // если все "ок", то создаем юзера
-      email: req.body.email,
+      email: escape(req.body.email),
       password: hash,
       name,
       about,
       avatar, // либо данные из body либо возьмет default из схемы
     }))
-    .then((user) => res.send({ data: user })) // вернем данные назад
+    .then((user) => {
+      user.password = escape(req.body.password);
+      res.send(user);
+    }) // вернем данные назад
     .catch((err) => {
       if (err.code === 11000) {
         next(new Conflict('Пользователь с такой почтой уже существует'));
@@ -68,14 +67,13 @@ module.exports.createUser = (req, res, next) => {
 };
 
 module.exports.updateUser = (req, res, next) => {
-  const name = req.body.name ? escape(req.body.name) : undefined;
-  const about = req.body.about ? escape(req.body.about) : undefined;
+  const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
@@ -86,7 +84,7 @@ module.exports.updateUser = (req, res, next) => {
 };
 
 module.exports.updateUserAvatar = (req, res, next) => {
-  const avatar = req.body.avatar ? escape(req.body.avatar) : undefined;
+  const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     // Сработает только если удалить пользователя из БД,
@@ -95,7 +93,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
@@ -106,7 +104,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
 };
 
 module.exports.login = (req, res, next) => {
-  const { email, password } = req.body;
+  const { password, email } = req.body;
 
   User.findUserByCredentials(email, password) // кастомный метод
     .then((user) => {

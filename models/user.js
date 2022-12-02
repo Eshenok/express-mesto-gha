@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const Unauthorized = require('../errors/Unauthorized');
+const { patternUrl, patternEmail } = require('../constants');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -18,11 +19,13 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    match: patternUrl,
   },
   email: {
     required: true,
     type: String,
     unique: true,
+    match: patternEmail,
   },
   password: {
     required: true,
