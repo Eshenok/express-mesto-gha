@@ -52,9 +52,10 @@ module.exports.createUser = (req, res, next) => {
       avatar, // либо данные из body либо возьмет default из схемы
     }))
     .then((user) => {
-      user.password = escape(req.body.password);
+      user = user.toObject();
+      delete user.password;
       res.send(user);
-    }) // вернем данные назад
+    })
     .catch((err) => {
       if (err.code === 11000) {
         next(new Conflict('Пользователь с такой почтой уже существует'));
