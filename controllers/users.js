@@ -115,6 +115,8 @@ module.exports.login = (req, res, next) => {
         httpOnly: true, // из js закрыли доступ
         sameSite: true, // посылать если запрос сделан с того же домена
       });
+      user = user.toObject();
+      delete user.password;
       res.send(user);
     }).catch(next);
 };
