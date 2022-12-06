@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-
 const app = express();
 const { PORT = 3000, CONNECT_DB, NODE_ENV } = process.env;
 const helmet = require('helmet');
