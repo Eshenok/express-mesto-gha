@@ -10,11 +10,6 @@ const { productionSecurityKey } = require('../constants');
 
 const { JWT_SECRET, NODE_ENV } = process.env;
 
-function omit(obj, key) {
-  const {[key]:ignore, ...rest} = obj;
-  return rest;
-}
-
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
