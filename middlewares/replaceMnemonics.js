@@ -1,15 +1,15 @@
 const escape = require('escape-html');
 
 module.exports.replaceMnemonics = (req, res, next) => {
-  for (const key in req.body) {
+  Object.keys(req.body).forEach((key) => {
     if (key !== 'password') { // линт ругается
       req.body[key] = escape(req.body[key]);
     }
-  }
-  for (const key in req.params) {
+  });
+  Object.keys(req.body).forEach((key) => {
     if (key === 'id' || key === 'cardId') { // линт ругается
       req.params[key] = escape(req.params[key]);
     }
-  }
+  })
   next();
 };
