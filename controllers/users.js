@@ -10,11 +10,6 @@ const { productionSecurityKey } = require('../constants');
 
 const { JWT_SECRET, NODE_ENV } = process.env;
 
-function omit(obj, key) {
-  const {[key]:ignore, ...rest} = obj;
-  return rest;
-}
-
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
@@ -57,9 +52,9 @@ module.exports.createUser = (req, res, next) => {
       avatar, // либо данные из body либо возьмет default из схемы
     }))
     .then((user) => {
-      user = user.toObject();
-      delete user.password;
-      res.send(user);
+      const userObj = user.toObject();
+      delete userObj.password;
+      res.send(userObj);
     })
     .catch((err) => {
       if (err.code === 11000) {
@@ -120,8 +115,8 @@ module.exports.login = (req, res, next) => {
         httpOnly: true, // из js закрыли доступ
         sameSite: true, // посылать если запрос сделан с того же домена
       });
-      user = user.toObject();
-      delete user.password;
-      res.send(user);
+      const userObj = user.toObject();
+      delete userObj.password;
+      res.send(userObj);
     }).catch(next);
 };
