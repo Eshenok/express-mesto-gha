@@ -21,7 +21,7 @@ app.use(helmet());
 
 // cors
 const corsOptions = {
-  origin: 'http://localhost:8080',
+  origin: ['http://localhost:3000', 'http://voloshin.eshenok.nomoredomains.club', 'https://voloshin.eshenok.nomoredomains.club'],
   optionsSuccessStatus: 200, // For legacy browser support
   methods: 'GET, PUT, PATCH, POST, DELETE',
 };
