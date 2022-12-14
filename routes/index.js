@@ -7,7 +7,10 @@ const auth = require('../middlewares/auth');
 const NotFound = require('../errors/NotFound');
 const { login, createUser } = require('../controllers/users');
 const { patternUrl } = require('../constants');
+const { requestLogger, errorLogger } = require('../middlewares/logger');
 
+// Логи запросов
+router.use(requestLogger);
 router.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
@@ -27,6 +30,9 @@ router.post('/signup', createAccountLimiter, celebrate({ // подключили
 router.use(auth); // все что ниже защищено мидлверой
 router.use('/cards', routerCard);
 router.use('/users', routerUser);
+
+// Логи ошибок
+router.use(errorLogger);
 
 // Ошибки celebrate
 router.use(errors({
