@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-
 const app = express();
 const { PORT = 3000, CONNECT_DB, NODE_ENV } = process.env;
 const helmet = require('helmet');
@@ -18,9 +17,16 @@ mongoose.connect(NODE_ENV === 'production' ? CONNECT_DB : 'mongodb://localhost:2
 app.use(limiter);
 app.use(helmet());
 
+// Распаковка кук
 app.use(cookieParser());
+
+// Подастановка мнемоник escapeHTML
 app.use(replaceMnemonics);
+
+// Роуты
 app.use('/', require('./routes/index'));
+
+// Центральный обработчик ошибок
 app.use(require('./errors/centralErrorHandling'));
 
 app.listen(PORT);
