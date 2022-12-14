@@ -10,6 +10,6 @@ module.exports.replaceMnemonics = (req, res, next) => {
     if (key === 'id' || key === 'cardId') { // линт ругается
       req.params[key] = escape(req.params[key]);
     }
-  })
+  });
   next();
 };

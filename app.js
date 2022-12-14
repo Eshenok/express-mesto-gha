@@ -2,12 +2,13 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+
 const app = express();
 const { PORT = 3000, CONNECT_DB, NODE_ENV } = process.env;
 const helmet = require('helmet');
+const cors = require('cors');
 const { replaceMnemonics } = require('./middlewares/replaceMnemonics');
 const { limiter } = require('./middlewares/limiter');
-const cors = require('cors');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -18,12 +19,12 @@ mongoose.connect(NODE_ENV === 'production' ? CONNECT_DB : 'mongodb://localhost:2
 app.use(limiter);
 app.use(helmet());
 
-//cors
+// cors
 const corsOptions = {
   origin: 'http://localhost:8080',
   optionsSuccessStatus: 200, // For legacy browser support
-  methods: "GET, PUT, PATCH, POST, DELETE",
-}
+  methods: 'GET, PUT, PATCH, POST, DELETE',
+};
 app.use(cors(corsOptions));
 
 // Распаковка кук

@@ -9,7 +9,7 @@ const { login, createUser } = require('../controllers/users');
 const { patternUrl } = require('../constants');
 const { requestLogger, errorLogger } = require('../middlewares/logger');
 
-//Логи запросов
+// Логи запросов
 router.use(requestLogger);
 router.post('/signin', celebrate({
   body: Joi.object().keys({
