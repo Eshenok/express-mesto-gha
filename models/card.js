@@ -1,3 +1,4 @@
+// Импорты
 const mongoose = require('mongoose');
 const { patternUrl } = require('../constants');
 
@@ -29,4 +30,5 @@ const cardSchema = new mongoose.Schema({
   },
 });
 
+// Экспорты
 module.exports = mongoose.model('card', cardSchema);

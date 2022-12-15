@@ -1,14 +1,14 @@
 require('dotenv').config();
-const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken'); // пакет для создания jwt
 const Unauthorized = require('../errors/Unauthorized');
 const { productionSecurityKey } = require('../constants');
 
 const { JWT_SECRET, NODE_ENV } = process.env;
 
 module.exports = (req, res, next) => {
-  const token = req.cookies.jwt; // Достаем токен
+  const token = req.cookies.jwt; // Достаем токен (с помощью cookieParser он доступен)
   if (!token) {
-    next(new Unauthorized('Необходимо авторизоваться'));
+    next(new Unauthorized('Необходимо авторизоваться')); // Если не нашли токен в куках передаем ошибку
     return;
   }
 

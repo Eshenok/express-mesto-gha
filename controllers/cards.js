@@ -1,3 +1,4 @@
+// Импорты
 const Card = require('../models/card');
 const NotFound = require('../errors/NotFound');
 const BadRequest = require('../errors/BadRequest');
@@ -32,7 +33,7 @@ module.exports.removeCard = (req, res, next) => {
         // Проверяем принадлежность карточки
         next(new Forbidden('Нельзя удалить чужую карточку'));
       } else {
-        Card.deleteOne(card) // если выше всё ок -> удаляем эту карточку без повторного поиска
+        Card.deleteOne(card) // если выше всё ок -> удаляем эту карточку
           .then(() => res.send(card));
       }
     })
