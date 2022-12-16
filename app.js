@@ -27,7 +27,7 @@ const options = {
   credentials: true,
 };
 
-app.use('*', cors()); // ПЕРВЫМ!
+app.use('*', cors(options)); // ПЕРВЫМ!
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
