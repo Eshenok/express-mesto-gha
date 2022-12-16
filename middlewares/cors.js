@@ -5,6 +5,6 @@ module.exports = function() {
     res.header("Access-Control-Allow-Headers", "X-Requested-With, Content-Type, origin, Authorization");
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
     res.header("Access-Control-Max-Age", 86400);
-    next();
+    res.end();
   };
 }
