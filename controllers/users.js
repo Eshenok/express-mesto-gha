@@ -113,7 +113,7 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : productionSecurityKey, { expiresIn: '7d' }); // Создаем токен
       res.cookie('jwt', token, { // Передаем токен юзеру
         maxAge: 3600000 * 24 * 7, // 7 дней срок
-        httpOnly: true, // из js закрыли доступ
+        // httpOnly: true, // из js закрыли доступ
         sameSite: true, // посылать если запрос сделан с того же домена
       });
       const userObj = user.toObject(); // Переводим JSON в jsобъект и удаляем поле пароля

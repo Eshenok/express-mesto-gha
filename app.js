@@ -6,12 +6,14 @@ const cookieParser = require('cookie-parser');
 // расшифорвка кук
 const { PORT = 2020, CONNECT_DB, NODE_ENV } = process.env; // Забираем из .env
 const helmet = require('helmet'); // пакет helmet (security)
-const cors = require('cors');
+const cors = require('./middlewares/cors');
 const { replaceMnemonics } = require('./middlewares/replaceMnemonics'); // middleware для замены спецсимволов на мнемоники
 const { limiter } = require('./middlewares/limiter'); // middleware для ограничения кол-ва запрос с 1 ip
 
 // константы
 const app = express();
+
+app.use(cors()); // ПЕРВЫМ!
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -22,7 +24,6 @@ mongoose.connect(NODE_ENV === 'production' ? CONNECT_DB : 'mongodb://localhost:2
 app.use(limiter);
 app.use(helmet());
 
-app.use(cors());
 // Распаковка кук
 app.use(cookieParser());
 
