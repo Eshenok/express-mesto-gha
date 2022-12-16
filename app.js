@@ -6,14 +6,28 @@ const cookieParser = require('cookie-parser');
 // расшифорвка кук
 const { PORT = 2020, CONNECT_DB, NODE_ENV } = process.env; // Забираем из .env
 const helmet = require('helmet'); // пакет helmet (security)
-const cors = require('./middlewares/cors');
+// const cors = require('./middlewares/cors');
 const { replaceMnemonics } = require('./middlewares/replaceMnemonics'); // middleware для замены спецсимволов на мнемоники
 const { limiter } = require('./middlewares/limiter'); // middleware для ограничения кол-ва запрос с 1 ip
 
 // константы
 const app = express();
 
-app.use(cors()); // ПЕРВЫМ!
+const cors = require('cors');
+
+const options = {
+  origin: [
+    'http://localhost:3000',
+    'https://voloshin.eshenok.nomoredomains.club',
+  ],
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+  allowedHeaders: ['Content-Type', 'origin', 'Authorization'],
+  credentials: true,
+};
+
+app.use('*', cors(options)); // ПЕРВЫМ!
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
