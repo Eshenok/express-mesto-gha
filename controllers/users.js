@@ -1,7 +1,8 @@
+// Импорты
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const escape = require('escape-html');
+const jwt = require('jsonwebtoken'); // Пакет для создания jwt
+const escape = require('escape-html'); // Пакет для замены спецсимволов на мнемоники
 const User = require('../models/user');
 const NotFound = require('../errors/NotFound');
 const BadRequest = require('../errors/BadRequest');
@@ -109,13 +110,13 @@ module.exports.login = (req, res, next) => {
 
   User.findUserByCredentials(email, password) // кастомный метод
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : productionSecurityKey, { expiresIn: '7d' });
-      res.cookie('jwt', token, {
+      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : productionSecurityKey, { expiresIn: '7d' }); // Создаем токен
+      res.cookie('jwt', token, { // Передаем токен юзеру
         maxAge: 3600000 * 24 * 7, // 7 дней срок
-        httpOnly: true, // из js закрыли доступ
+        // httpOnly: true, // из js закрыли доступ
         sameSite: true, // посылать если запрос сделан с того же домена
       });
-      const userObj = user.toObject();
+      const userObj = user.toObject(); // Переводим JSON в jsобъект и удаляем поле пароля
       delete userObj.password;
       res.send(userObj);
     }).catch(next);

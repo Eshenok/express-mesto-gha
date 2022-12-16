@@ -1,5 +1,5 @@
 const rateLimit = require('express-rate-limit');
-
+// Пакет лимитера запросов
 const { NODE_ENV } = process.env;
 
 const limiter = rateLimit({
@@ -8,12 +8,13 @@ const limiter = rateLimit({
 });
 
 const createAccountLimiter = rateLimit({ // лимит на создание пользователей
-  windowMs: 30 * 30 * 1000, // 30 минут
-  max: NODE_ENV === 'production' ? 10 : 9999, // максимум 10
+  windowMs: 30 * 60 * 1000, // 30 минут
+  max: NODE_ENV === 'production' ? 10 : 9999, // максимум 10, если не в продакшене то ограничение в 9999
   message:
     'Too many request',
-  standardHeaders: true,
-  legacyHeaders: false,
+  standardHeaders: true, // Стандартные заголовки
+  legacyHeaders: false, // Легаси заголовки
 });
 
+// экспорты
 module.exports = { limiter, createAccountLimiter };

@@ -1,3 +1,9 @@
+/*
+ * celebrate используем для валидации, чтобы лишний раз не нагружать БД
+ * Для id используем длину в 24 символа и hex
+ */
+
+// Импорты
 const routerUser = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const {
@@ -24,4 +30,5 @@ routerUser.patch('/me/avatar', celebrate({
   }),
 }), updateUserAvatar);
 
+// Экспорты
 module.exports = routerUser;
