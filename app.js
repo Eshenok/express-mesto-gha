@@ -3,17 +3,15 @@ require('dotenv').config(); // обращение к файлу .env
 const express = require('express');
 const mongoose = require('mongoose'); // mongodb
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 // расшифорвка кук
 const { PORT = 2020, CONNECT_DB, NODE_ENV } = process.env; // Забираем из .env
 const helmet = require('helmet'); // пакет helmet (security)
-// const cors = require('./middlewares/cors');
 const { replaceMnemonics } = require('./middlewares/replaceMnemonics'); // middleware для замены спецсимволов на мнемоники
 const { limiter } = require('./middlewares/limiter'); // middleware для ограничения кол-ва запрос с 1 ip
 
 // константы
 const app = express();
-
-const cors = require('cors');
 
 const options = {
   origin: [

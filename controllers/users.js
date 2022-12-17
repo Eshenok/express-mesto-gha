@@ -13,7 +13,7 @@ const { JWT_SECRET, NODE_ENV } = process.env;
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.send(users))
+    .then((users) => res.send({data: users}))
     .catch(next);
 };
 
@@ -22,7 +22,7 @@ module.exports.getCurrentUser = (req, res, next) => {
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
-    .then((user) => res.send(user))
+    .then((user) => res.send({data: user}))
     .catch(next);
 };
 
@@ -31,7 +31,7 @@ module.exports.getUser = (req, res, next) => {
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
-    .then((user) => res.send(user))
+    .then((user) => res.send({data: user}))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные'));
@@ -55,7 +55,7 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => {
       const userObj = user.toObject();
       delete userObj.password;
-      res.send(userObj);
+      res.send({data: userObj});
     })
     .catch((err) => {
       if (err.code === 11000) {
@@ -75,7 +75,7 @@ module.exports.updateUser = (req, res, next) => {
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
-    .then((user) => res.send(user))
+    .then((user) => res.send({data: user}))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
@@ -95,7 +95,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
-    .then((user) => res.send(user))
+    .then((user) => res.send({data: user}))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
@@ -113,11 +113,11 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : productionSecurityKey, { expiresIn: '7d' }); // Создаем токен
       res.cookie('jwt', token, { // Передаем токен юзеру
         maxAge: 3600000 * 24 * 7, // 7 дней срок
-        // httpOnly: true, // из js закрыли доступ
+        httpOnly: true, // из js закрыли доступ
         sameSite: true, // посылать если запрос сделан с того же домена
       });
       const userObj = user.toObject(); // Переводим JSON в jsобъект и удаляем поле пароля
       delete userObj.password;
-      res.send(userObj);
+      res.send({data: userObj});
     }).catch(next);
 };
