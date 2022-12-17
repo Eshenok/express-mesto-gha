@@ -13,7 +13,7 @@ const { JWT_SECRET, NODE_ENV } = process.env;
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.send({data: users}))
+    .then((users) => res.send(users))
     .catch(next);
 };
 
@@ -22,7 +22,7 @@ module.exports.getCurrentUser = (req, res, next) => {
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
-    .then((user) => res.send({data: user}))
+    .then((user) => res.send(user))
     .catch(next);
 };
 
@@ -31,7 +31,7 @@ module.exports.getUser = (req, res, next) => {
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
-    .then((user) => res.send({data: user}))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные'));
@@ -55,7 +55,7 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => {
       const userObj = user.toObject();
       delete userObj.password;
-      res.send({data: userObj});
+      res.send(userObj);
     })
     .catch((err) => {
       if (err.code === 11000) {
@@ -75,7 +75,7 @@ module.exports.updateUser = (req, res, next) => {
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
-    .then((user) => res.send({data: user}))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
@@ -95,7 +95,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
     .orFail(() => {
       throw new NotFound('Пользователь не найден');
     })
-    .then((user) => res.send({data: user}))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
@@ -118,6 +118,6 @@ module.exports.login = (req, res, next) => {
       });
       const userObj = user.toObject(); // Переводим JSON в jsобъект и удаляем поле пароля
       delete userObj.password;
-      res.send({data: userObj});
+      res.send(userObj);
     }).catch(next);
 };
