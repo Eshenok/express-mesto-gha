@@ -115,7 +115,7 @@ module.exports.login = (req, res, next) => {
         maxAge: 3600000 * 24 * 7, // 7 дней срок
         httpOnly: true, // из js закрыли доступ
         sameSite: true, // посылать если запрос сделан с того же домена
-        secure: true,
+        secure: false,
       });
       const userObj = user.toObject(); // Переводим JSON в jsобъект и удаляем поле пароля
       delete userObj.password;
