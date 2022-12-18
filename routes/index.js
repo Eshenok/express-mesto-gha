@@ -32,7 +32,7 @@ router.post('/signup', createAccountLimiter, celebrate({ // подключили
   }),
 }), createUser);
 
-router.post('/logout', logout);
+router.get('/logout', logout);
 
 router.use(auth); // все что ниже защищено мидлверой
 router.use('/cards', routerCard);
