@@ -17,6 +17,7 @@ const options = {
   origin: [
     'http://localhost:3000',
     'https://voloshin.eshenok.nomoredomains.club',
+    'http://voloshin.eshenok.nomoredomains.club',
   ],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   preflightContinue: false,
