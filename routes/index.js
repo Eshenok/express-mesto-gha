@@ -37,9 +37,6 @@ router.get('/logout', logout);
 router.use('/cards', routerCard);
 router.use('/users', routerUser);
 
-// Логи ошибок
-router.use(errorLogger);
-
 // Ошибки celebrate
 router.use(errors({
   message: 'Введены некорректные данные',
@@ -49,6 +46,9 @@ router.use(errors({
 router.use((req, res, next) => {
   next(new NotFound('Такой страницы не существует'));
 });
+
+// Логи ошибок
+router.use(errorLogger);
 
 // Экспорты
 module.exports = router;
