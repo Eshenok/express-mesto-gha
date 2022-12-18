@@ -8,7 +8,7 @@ const routerUser = require('./users');
 const routerCard = require('./cards');
 const auth = require('../middlewares/auth');
 const NotFound = require('../errors/NotFound');
-const { login, createUser } = require('../controllers/users');
+const { login, logout, createUser } = require('../controllers/users');
 const { patternUrl } = require('../constants');
 const { requestLogger, errorLogger } = require('../middlewares/logger');
 
@@ -31,6 +31,8 @@ router.post('/signup', createAccountLimiter, celebrate({ // подключили
     avatar: Joi.string().pattern(patternUrl),
   }),
 }), createUser);
+
+router.post('/logout', logout);
 
 router.use(auth); // все что ниже защищено мидлверой
 router.use('/cards', routerCard);

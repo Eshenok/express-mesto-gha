@@ -121,3 +121,12 @@ module.exports.login = (req, res, next) => {
       res.send(userObj);
     }).catch(next);
 };
+
+module.exports.logout = (req, res) => {
+  res.cookie('jwt', '', {
+    maxAge: 0,
+    httpOnly: true,
+    sameSite: true,
+  });
+  res.status(200).send('Complete');
+}
