@@ -32,9 +32,8 @@ router.post('/signup', createAccountLimiter, celebrate({ // подключили
   }),
 }), createUser);
 
-router.get('/logout', logout);
-
 router.use(auth); // все что ниже защищено мидлверой
+router.get('/logout', logout);
 router.use('/cards', routerCard);
 router.use('/users', routerUser);
 

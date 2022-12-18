@@ -128,5 +128,5 @@ module.exports.logout = (req, res) => {
     httpOnly: true,
     sameSite: true,
   });
-  res.status(200).send('Complete');
+  res.send({message: 'Complete'});
 }
